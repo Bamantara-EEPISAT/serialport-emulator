@@ -25,8 +25,6 @@ Before running the project, make sure you have set up virtual serial ports. You 
    - In the software interface, you can create two ports (e.g., COM3 and COM4) and bridge them together.
    - Set up a local bridge to ensure that data sent from one port is received by the other, simulating the serial communication.
 
-Here's an updated section for the README with the new `mock_serialport.exe` binary instructions for using the mock serial port in both **transmit** and **receive** modes:
-
 ---
 
 ### 3. Using Mock Serial Port Binary
@@ -101,7 +99,7 @@ This will download and install the necessary dependencies.
 
 Before transmitting or receiving data, you need to generate a CSV file containing telemetry data for emulation.
 
-1. In the parent directory, navigate to the `telemetry_generator` folder.
+1. In the parent directory, look for the `telemetry_generator` python script.
 2. Run the Python script `telemetry_generator.py` to generate the `telemetry_data.csv` file, which contains mock telemetry data.
 
 #### To generate the telemetry data, run:
@@ -150,7 +148,8 @@ This project allows you to simulate serial communication by using virtual COM po
 #### Folder Structure:
 ```
 /3rd_party_software
-    /com0com
+    /setup_com0com
+    /com0com_driver
     /FreeVirtualSerialPortTools
 /mock_serialport.exe
 /telemetry_generator.py
@@ -159,48 +158,6 @@ This project allows you to simulate serial communication by using virtual COM po
     (project files)
 README.md
 ```
-
----
-
-### `telemetry_generator.py` Script (Example)
-
-Here's an example of the `telemetry_generator.py` script, which generates mock telemetry data in CSV format:
-
-```python
-import csv
-import random
-import time
-
-# Define the CSV file to write telemetry data
-filename = "telemetry_data.csv"
-
-# List of headers for telemetry data
-headers = ["Time", "Temperature", "Humidity", "Pressure", "Altitude"]
-
-# Function to generate random telemetry data
-def generate_telemetry():
-    time_stamp = time.strftime("%Y-%m-%d %H:%M:%S")
-    temperature = round(random.uniform(20.0, 30.0), 2)  # Celsius
-    humidity = round(random.uniform(40.0, 60.0), 2)  # Percentage
-    pressure = round(random.uniform(950.0, 1050.0), 2)  # hPa
-    altitude = round(random.uniform(0.0, 5000.0), 2)  # meters
-    return [time_stamp, temperature, humidity, pressure, altitude]
-
-# Write the telemetry data to the CSV file
-with open(filename, mode='w', newline='') as file:
-    writer = csv.writer(file)
-    writer.writerow(headers)  # Write the header
-    for _ in range(100):  # Generate 100 rows of telemetry data
-        writer.writerow(generate_telemetry())
-
-print(f"Generated telemetry data in {filename}")
-```
-
-This script generates random telemetry data with time, temperature, humidity, pressure, and altitude and writes it to the `telemetry_data.csv` file.
-
----
-
-Make sure the `telemetry_generator.py` script is placed in the `telemetry_generator` folder, and follow the steps to generate the telemetry data before running the Rust application.
 
 ### License
 
