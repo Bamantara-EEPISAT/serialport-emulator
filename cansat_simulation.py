@@ -125,7 +125,7 @@ class CanSatSimulator:
                 print("Changing State")
                 self.state = self.constants["STATES"][min(self.packet_count // 10, len(self.constants["STATES"]) - 1)]
 
-            packet = f"{self.constants['TEAM_ID']},{self.packet_count},{format_time},{self.state}," \
+            packet = f"{self.constants['TEAM_ID']},{format_time},{self.packet_count},{"F,"}.{self.state}," \
                      f"{round(random.uniform(*self.constants['altitude_values'][self.state]), 1)}," \
                      f"{round(random.uniform(*self.constants['temperature_range']), 2)}," \
                      f"{round(random.uniform(*self.constants['pressure_range']), 1)}," \
