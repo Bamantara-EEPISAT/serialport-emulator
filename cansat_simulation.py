@@ -142,8 +142,8 @@ class CanSatSimulator:
                      f"{random.randint(*self.constants['rotation_rate_range'])}," \
                      f"{gps_time}," \
                      f"{round(random.uniform(*self.constants['gps_altitude_range']), 2)}," \
-                     f"{round(random.uniform(*self.constants['latitude_range']), 2)}," \
-                     f"{round(random.uniform(*self.constants['longitude_range']), 2)}," \
+                     f"{round(random.uniform(*self.constants['latitude_range']), 4)}," \
+                     f"{round(random.uniform(*self.constants['longitude_range']), 4)}," \
                      f"{random.randint(*self.constants['gps_sats_range'])}," \
                      f"{self.command},," \
 
@@ -153,7 +153,8 @@ class CanSatSimulator:
             checksum = ~(cs1 + cs2) & 0xFF         
             packet += f"{checksum}"
             print(f"Transmitting telemetry: {packet} Checksum: {checksum}")
-            self.serial_port.write((packet + self.transmit_delim).encode())
+            full_packet = packet + self.transmit_delim
+            self.serial_port.write(full_packet.encode('utf-8'))
             self.packet_count += 1
             self.last_transmission_time = current_time
 
