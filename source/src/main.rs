@@ -18,9 +18,13 @@ struct Cli {
     #[clap(short, long, value_parser)]
     mode: Mode,
 
-    /// Path to the telemetry data CSV file (required in transmit mode)
-    #[clap(short, long, required_if_eq("mode", "transmit"))]
+    /// Path to the telemetry data CSV file (used only in file-based transmit mode)
+    #[clap(short, long)]
     file_path: Option<String>,
+
+    /// Data to directly send (used only in direct send mode)
+    #[clap(long, conflicts_with = "file_path")]
+    send: Option<String>,
 
     /// Enable loop mode to continuously retransmit the CSV file
     #[clap(long)]
@@ -51,35 +55,47 @@ fn main() -> io::Result<()> {
 
     match args.mode {
         Mode::Transmit => {
-            let file_path = args.file_path.expect("File path is required in transmit mode");
-
-            loop {
-                // Open the CSV file for reading
-                let file = File::open(&file_path).expect("Failed to open telemetry data CSV file");
-                let mut csv_reader = ReaderBuilder::new()
-                    .has_headers(true)
-                    .from_reader(file);
-
-                // Loop over each record in the CSV file and send it
-                for result in csv_reader.records() {
-                    let record = result.expect("Failed to read CSV record");
-
-                    // Convert the record to a comma-separated string for transmission
-                    let telemetry_data: String = record.iter().map(|field| field.to_string()).collect::<Vec<_>>().join(",");
-
-                    // Send data over TX port
-                    port.write_all(telemetry_data.as_bytes())?;
+            // Check if `send` option is provided
+            if let Some(data) = args.send {
+                // Directly send the specified data
+                loop {
+                    port.write_all(data.as_bytes())?;
                     port.write_all(args.delimiter.as_bytes())?; // Send custom delimiter
-                    println!("Sent: {}", telemetry_data);
+                    println!("Sent: {}", data);
+
+                    // Exit loop if loop_mode is not enabled
+                    if !args.loop_mode {
+                        break;
+                    }
 
                     // Add a delay to simulate transmission interval
                     std::thread::sleep(Duration::from_secs(1));
                 }
+            } else if let Some(file_path) = args.file_path {
+                // Open the CSV file for reading and send each record
+                loop {
+                    let file = File::open(&file_path).expect("Failed to open telemetry data CSV file");
+                    let mut csv_reader = ReaderBuilder::new()
+                        .has_headers(true)
+                        .from_reader(file);
 
-                // Exit the loop if loop_mode is not enabled
-                if !args.loop_mode {
-                    break;
+                    for result in csv_reader.records() {
+                        let record = result.expect("Failed to read CSV record");
+                        let telemetry_data: String = record.iter().map(|field| field.to_string()).collect::<Vec<_>>().join(",");
+
+                        port.write_all(telemetry_data.as_bytes())?;
+                        port.write_all(args.delimiter.as_bytes())?;
+                        println!("Sent: {}", telemetry_data);
+
+                        std::thread::sleep(Duration::from_secs(1));
+                    }
+
+                    if !args.loop_mode {
+                        break;
+                    }
                 }
+            } else {
+                eprintln!("Error: Either --file_path or --send must be provided in transmit mode.");
             }
         }
         Mode::Receive => {

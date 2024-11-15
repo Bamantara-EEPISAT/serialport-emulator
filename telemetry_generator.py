@@ -33,7 +33,7 @@ for i in range(55):
         "PACKET_COUNT": packet_count,
         "MODE": "F",
         "STATE": state,
-        "ALTITUDE": random.uniform(*altitude_values[state]),
+        "ALTITUDE": round(random.uniform(*altitude_values[state]), 1),
         "TEMPERATURE": round(random.uniform(*temperature_range), 1),
         "PRESSURE": round(random.uniform(*pressure_range), 1),
         "VOLTAGE": round(random.uniform(*voltage_range), 2),
