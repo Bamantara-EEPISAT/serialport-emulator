@@ -7,7 +7,7 @@ import random
 def load_constants(year):
     constants = {
         2025: {
-            "TEAM_ID": "1000",
+            "TEAM_ID": "3121",
             "PACKET_COUNT_START": 0,
             "START_TIME": datetime(2025, 11, 14, 13, 0, 0),
             "STATES": ["LAUNCH_PAD", "ASCENT", "APOGEE", "DESCENT", "PROBE_RELEASE", "LANDED"],
@@ -38,7 +38,7 @@ def load_constants(year):
 class CanSatSimulator:
     command = ""
     flight_mode = False
-    def __init__(self, year, comport, baudrate, transmit_delim="\n", receive_delim="\n"):
+    def __init__(self, year, comport, baudrate, transmit_delim="\r\n", receive_delim="\r\n"):
         self.constants = load_constants(year)
         self.serial_port = serial.Serial(comport, baudrate, timeout=1)
         self.transmit_delim = transmit_delim
@@ -153,7 +153,7 @@ class CanSatSimulator:
             checksum = ~(cs1 + cs2) & 0xFF         
             packet += f"{checksum}"
             print(f"Transmitting telemetry: {packet} Checksum: {checksum}")
-            full_packet = packet + self.transmit_delim
+            full_packet = packet + self.transmit_delim  # self.transmit_delim defaults to "\r\n"
             self.serial_port.write(full_packet.encode('utf-8'))
             self.packet_count += 1
             self.last_transmission_time = current_time
@@ -206,8 +206,8 @@ class CanSatSimulator:
 year = 2025
 comport = "COM1"  # Replace with actual COM port
 baudrate = 19200
-transmit_delim = "\r"
-receive_delim = "\r"
+transmit_delim = "\r\n"
+receive_delim = "\r\n"
 
 cansat = CanSatSimulator(year, comport, baudrate, transmit_delim, receive_delim)
 cansat.start()
