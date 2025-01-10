@@ -120,9 +120,11 @@ class CanSatSimulator:
                 if(self.state == "LANDED"):
                     self.flight_mode = False
                     self.packet_count = 0
+                    self.telemetry_on = False  # Nonaktifkan telemetry
                     print("Flight has ended.")
-                    print("State changed to LAUNCH_PAD.")
-                print("Changing State")
+                    print("Telemetry transmission deactivated.")
+                # print("State changed to LAUNCH_PAD.")
+                # print("Changing State")
                 self.state = self.constants["STATES"][min(self.packet_count // 10, len(self.constants["STATES"]) - 1)]
 
             packet = f"{self.constants['TEAM_ID']},{format_time},{self.packet_count},{"F,"}{self.state}," \
@@ -168,7 +170,7 @@ class CanSatSimulator:
 
     def handle_sim(self, mode):
         """Enable, activate, or disable simulation mode."""
-        if mode == "ENABLE":
+        if mode == "ENABLE":    
             self.simulation_mode = True
             print("Simulation mode enabled.")
         elif mode == "ACTIVATE" and self.simulation_mode:
