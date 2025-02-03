@@ -27,8 +27,6 @@ def load_constants(year):
             "mag_range": (-1.0, 1.0),
             "rotation_rate_range": (0, 360),
             "gps_altitude_range": (0, 1000),
-            "latitude_range": (-90.0, 90.0),
-            "longitude_range": (-180.0, 180.0),
             "gps_sats_range": (3, 12),
             "commands": ["CXON", "CAL", "FLY"]
         }
@@ -38,6 +36,10 @@ def load_constants(year):
 class CanSatSimulator:
     command = ""
     flight_mode = False
+    BASE_LAT = -7.275823
+    BASE_LON = 112.794301
+    MAX_DISTANCE_KM = 0.5  # Maximum 0.5 km radius
+
     def __init__(self, year, comport, baudrate, transmit_delim="\r\n", receive_delim="\r\n"):
         self.constants = load_constants(year)
         self.serial_port = serial.Serial(comport, baudrate, timeout=1)
@@ -109,6 +111,15 @@ class CanSatSimulator:
             if char == '\0':    # Stop if a null character is encountered
                 break
         return hasil & 0xFFFF  # Return as a 16-bit result
+
+    def random_coordinates(self):
+        """Generate a random coordinate within BASE KM in radius."""
+        radius = self.MAX_DISTANCE_KM / 111.0  # Convert km to degrees latitude approx.
+        angle = random.uniform(0, 2 * math.pi)
+        offset = random.uniform(0, radius)
+        lat_offset = offset * math.cos(angle)
+        lon_offset = offset * math.sin(angle) / math.cos(math.radians(self.BASE_LAT))
+        return round(self.BASE_LAT + lat_offset, 6), round(self.BASE_LON + lon_offset, 6)
     
     def transmit_telemetry(self):
         """Transmit telemetry data based on the current state every 1 second."""
@@ -116,6 +127,8 @@ class CanSatSimulator:
         if (current_time - self.last_transmission_time).total_seconds() >= 1:
             format_time = current_time.strftime("%H:%M:%S")
             gps_time = format_time
+            lat, lon = self.random_coordinates()
+
             if self.flight_mode:
                 if(self.state == "LANDED"):
                     self.flight_mode = False
@@ -144,8 +157,8 @@ class CanSatSimulator:
                      f"{random.randint(*self.constants['rotation_rate_range'])}," \
                      f"{gps_time}," \
                      f"{round(random.uniform(*self.constants['gps_altitude_range']), 2)}," \
-                     f"{round(random.uniform(*self.constants['latitude_range']), 4)}," \
-                     f"{round(random.uniform(*self.constants['longitude_range']), 4)}," \
+                     f"{lat}," \
+                     f"{lon}," \
                      f"{random.randint(*self.constants['gps_sats_range'])}," \
                      f"{self.command},," \
 

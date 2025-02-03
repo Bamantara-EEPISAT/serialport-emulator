@@ -4,7 +4,7 @@ from datetime import datetime
 def load_constants(year):
     constants = {
         2025: {
-            "TEAM_ID": "1000",  # Replace with your team ID
+            "TEAM_ID": "3121",  # Replace with your team ID
             "PACKET_COUNT_START": 0,
             "START_TIME": datetime(2025, 11, 14, 13, 0, 0),  # Starting time for 2025
             "STATES": ["LAUNCH_PAD", "ASCENT", "APOGEE", "DESCENT", "PROBE_RELEASE", "LANDED"],
