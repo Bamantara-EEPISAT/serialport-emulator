@@ -2,6 +2,7 @@ import serial
 from datetime import datetime, timedelta
 import time
 import random
+import math
 
 # Load constants based on year
 def load_constants(year):
