@@ -2,9 +2,20 @@ import csv
 import random
 from datetime import timedelta
 from constants import TEAM_ID, START_TIME, STATES, altitude_values, temperature_range, pressure_range, voltage_range, gyro_range, accel_range, mag_range, rotation_rate_range, gps_altitude_range, latitude_range, longitude_range, gps_sats_range, commands
+import math
 
 # Set year
 year = 2025
+
+# Generating telemetry data
+telemetry_data = []
+current_time = START_TIME
+packet_count = 0
+
+# Lat Long Range
+BASE_LAT = -7.275823
+BASE_LON = 112.794301
+MAX_DISTANCE_KM = 0.5  # Maximum 0.5 km radius
 
 # Checksum calculation functions
 def buatcs(data_str):
@@ -15,16 +26,22 @@ def buatcs(data_str):
             break
     return hasil & 0xFFFF  # Return as a 16-bit result
 
-# Generating telemetry data
-telemetry_data = []
-current_time = START_TIME
-packet_count = 0
+# Random Lat Long in Radius MAX_DISTANCE_KM
+def random_coordinates():
+    """Generate a random coordinate within BASE KM in radius."""
+    radius = MAX_DISTANCE_KM / 111.0  # Convert km to degrees latitude approx.
+    angle = random.uniform(0, 2 * math.pi)
+    offset = random.uniform(0, radius)
+    lat_offset = offset * math.cos(angle)
+    lon_offset = offset * math.sin(angle) / math.cos(math.radians(BASE_LAT))
+    return round(BASE_LAT + lat_offset, 6), round(BASE_LON + lon_offset, 6)
 
 for i in range(55):
     state = STATES[min(i // 10, len(STATES) - 1)]  # Move through states
     packet_count += 1
     mission_time = current_time.strftime("%H:%M:%S")
     gps_time = mission_time  # Simulated GPS time as mission time
+    lat, lon = random_coordinates()
 
     # Generate data for each field
     row = {
@@ -49,8 +66,8 @@ for i in range(55):
         "AUTO_GYRO_ROTATION_RATE": random.randint(*rotation_rate_range),
         "GPS_TIME": gps_time,
         "GPS_ALTITUDE": round(random.uniform(*gps_altitude_range), 2),
-        "GPS_LATITUDE": round(random.uniform(*latitude_range), 4),
-        "GPS_LONGITUDE": round(random.uniform(*longitude_range), 4),
+        "GPS_LATITUDE": lat,
+        "GPS_LONGITUDE": lon,
         "GPS_SATS": random.randint(*gps_sats_range),
         "CMD_ECHO": commands[1] if state == "LAUNCH_PAD" and packet_count == 0 else commands[0],
         "": ""
