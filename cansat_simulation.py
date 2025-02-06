@@ -158,8 +158,8 @@ class CanSatSimulator:
                      f"{random.randint(*self.constants['rotation_rate_range'])}," \
                      f"{gps_time}," \
                      f"{round(random.uniform(*self.constants['gps_altitude_range']), 2)}," \
-                     f"{lat}," \
-                     f"{lon}," \
+                     f"{lat:.6f}," \
+                     f"{lon:.4f}," \
                      f"{random.randint(*self.constants['gps_sats_range'])}," \
                      f"{self.command},," \
 
