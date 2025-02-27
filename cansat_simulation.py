@@ -37,8 +37,8 @@ def load_constants(year):
 class CanSatSimulator:
     command = ""
     flight_mode = False
-    BASE_LAT = -7.275823
-    BASE_LON = 112.794301
+    BASE_LAT = -7.275763964907654
+    BASE_LON = 112.79431652372989
     MAX_DISTANCE_KM = 0.5  # Maximum 0.5 km radius
 
     def __init__(self, year, comport, baudrate, transmit_delim="\r\n", receive_delim="\r\n"):
