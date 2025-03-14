@@ -131,48 +131,56 @@ class CanSatSimulator:
             lat, lon = self.random_coordinates()
 
             if self.flight_mode:
-                if(self.state == "LANDED"):
+                if self.state == "LANDED":
                     self.flight_mode = False
                     self.packet_count = 0
                     self.telemetry_on = False  # Nonaktifkan telemetry
                     print("Flight has ended.")
                     print("Telemetry transmission deactivated.")
-                # print("State changed to LAUNCH_PAD.")
-                # print("Changing State")
                 self.state = self.constants["STATES"][min(self.packet_count // 10, len(self.constants["STATES"]) - 1)]
 
+            # Generate telemetry packet
             packet = f"{self.constants['TEAM_ID']},{format_time},{self.packet_count},{"F,"}{self.state}," \
-                     f"{round(random.uniform(*self.constants['altitude_values'][self.state]), 1)}," \
-                     f"{round(random.uniform(*self.constants['temperature_range']), 2)}," \
-                     f"{round(random.uniform(*self.constants['pressure_range']), 1)}," \
-                     f"{round(random.uniform(*self.constants['voltage_range']), 2)}," \
-                     f"{round(random.uniform(*self.constants['gyro_range']), 2)}," \
-                     f"{round(random.uniform(*self.constants['gyro_range']), 2)}," \
-                     f"{round(random.uniform(*self.constants['gyro_range']), 2)}," \
-                     f"{round(random.uniform(*self.constants['accel_range']), 2)}," \
-                     f"{round(random.uniform(*self.constants['accel_range']), 2)}," \
-                     f"{round(random.uniform(*self.constants['accel_range']), 2)}," \
-                     f"{round(random.uniform(*self.constants['mag_range']), 2)}," \
-                     f"{round(random.uniform(*self.constants['mag_range']), 2)}," \
-                     f"{round(random.uniform(*self.constants['mag_range']), 2)}," \
-                     f"{random.randint(*self.constants['rotation_rate_range'])}," \
-                     f"{gps_time}," \
-                     f"{round(random.uniform(*self.constants['gps_altitude_range']), 2)}," \
-                     f"{lat:.6f}," \
-                     f"{lon:.4f}," \
-                     f"{random.randint(*self.constants['gps_sats_range'])}," \
-                     f"{self.command},," \
+                    f"{round(random.uniform(*self.constants['altitude_values'][self.state]), 1)}," \
+                    f"{round(random.uniform(*self.constants['temperature_range']), 2)}," \
+                    f"{round(random.uniform(*self.constants['pressure_range']), 1)}," \
+                    f"{round(random.uniform(*self.constants['voltage_range']), 2)}," \
+                    f"{round(random.uniform(*self.constants['gyro_range']), 2)}," \
+                    f"{round(random.uniform(*self.constants['gyro_range']), 2)}," \
+                    f"{round(random.uniform(*self.constants['gyro_range']), 2)}," \
+                    f"{round(random.uniform(*self.constants['accel_range']), 2)}," \
+                    f"{round(random.uniform(*self.constants['accel_range']), 2)}," \
+                    f"{round(random.uniform(*self.constants['accel_range']), 2)}," \
+                    f"{round(random.uniform(*self.constants['mag_range']), 2)}," \
+                    f"{round(random.uniform(*self.constants['mag_range']), 2)}," \
+                    f"{round(random.uniform(*self.constants['mag_range']), 2)}," \
+                    f"{random.randint(*self.constants['rotation_rate_range'])}," \
+                    f"{gps_time}," \
+                    f"{round(random.uniform(*self.constants['gps_altitude_range']), 2)}," \
+                    f"{lat:.6f}," \
+                    f"{lon:.4f}," \
+                    f"{random.randint(*self.constants['gps_sats_range'])}," \
+                    f"{self.command},," 
 
+            # Calculate checksum
             cst = self.buatcs(packet)
             cs1 = cst & 0xFF
             cs2 = (cst >> 8) & 0xFF
-            checksum = ~(cs1 + cs2) & 0xFF         
-            packet += f"{checksum}"
+            checksum = ~(cs1 + cs2) & 0xFF
+
+            # Add TILT_X, TILT_Y, ROT_Z
+            tilt_x = round(random.uniform(*self.constants['gyro_range']), 2)
+            tilt_y = round(random.uniform(*self.constants['gyro_range']), 2)
+            rot_z = random.randint(*self.constants['rotation_rate_range'])
+
+            packet += f"{checksum},{tilt_x},{tilt_y},{rot_z}"
+
             print(f"Transmitting telemetry: {packet} Checksum: {checksum}")
             full_packet = packet + self.transmit_delim  # self.transmit_delim defaults to "\r\n"
             self.serial_port.write(full_packet.encode('utf-8'))
             self.packet_count += 1
             self.last_transmission_time = current_time
+                                    
 
     def handle_st(self, time_value):
         """Set the CanSat's time."""
