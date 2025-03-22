@@ -160,7 +160,7 @@ class CanSatSimulator:
                     f"{lat:.6f}," \
                     f"{lon:.4f}," \
                     f"{random.randint(*self.constants['gps_sats_range'])}," \
-                    f"{self.command},," 
+                    f"{self.command}," 
 
             # Calculate checksum
             cst = self.buatcs(packet)
@@ -173,7 +173,7 @@ class CanSatSimulator:
             tilt_y = round(random.uniform(*self.constants['gyro_range']), 2)
             rot_z = random.randint(*self.constants['rotation_rate_range'])
 
-            packet += f"{checksum},{tilt_x},{tilt_y},{rot_z}"
+            packet += f"{tilt_x},{tilt_y},{rot_z},{checksum}"
 
             print(f"Transmitting telemetry: {packet} Checksum: {checksum}")
             full_packet = packet + self.transmit_delim  # self.transmit_delim defaults to "\r\n"
