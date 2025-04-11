@@ -140,7 +140,7 @@ class CanSatSimulator:
                 self.state = self.constants["STATES"][min(self.packet_count // 10, len(self.constants["STATES"]) - 1)]
 
             # Generate telemetry packet
-            packet = f"{self.constants['TEAM_ID']},{format_time},{self.packet_count},{"F,"}{self.state}," \
+            packet = f"{self.constants['TEAM_ID']},{format_time},{self.packet_count},F,{self.state}," \
                     f"{round(random.uniform(*self.constants['altitude_values'][self.state]), 1)}," \
                     f"{round(random.uniform(*self.constants['temperature_range']), 2)}," \
                     f"{round(random.uniform(*self.constants['pressure_range']), 1)}," \
@@ -168,12 +168,12 @@ class CanSatSimulator:
             cs2 = (cst >> 8) & 0xFF
             checksum = ~(cs1 + cs2) & 0xFF
 
-            # Add TILT_X, TILT_Y, ROT_Z
+            # Add TILT_X, TILT_Y, POINTING_ERROR
             tilt_x = round(random.uniform(*self.constants['gyro_range']), 2)
             tilt_y = round(random.uniform(*self.constants['gyro_range']), 2)
-            rot_z = random.randint(*self.constants['rotation_rate_range'])
+            pointing_error = random.randint(0, 359)
 
-            packet += f"{tilt_x},{tilt_y},{rot_z},{checksum}"
+            packet += f"{tilt_x},{tilt_y},{pointing_error},{checksum}"
 
             print(f"Transmitting telemetry: {packet} Checksum: {checksum}")
             full_packet = packet + self.transmit_delim  # self.transmit_delim defaults to "\r\n"
