@@ -64,7 +64,7 @@ class CanSatSimulator:
         """Send CSV header"""
         header = (
             "TEAM_ID,MISSION_TIME,PACKET_COUNT,MODE,STATE,ALTITUDE,TEMPERATURE,PRESSURE,VOLTAGE,CURRENT,"
-            "GYRO_R,GYRO_P,GYRO_Y,ACCEL_R,ACCEL_P,ACCEL_Y,MAG_R,MAG_P,MAG_Y,GPS_TIME,GPS_ALTITUDE,"
+            "GYRO_R,GYRO_P,GYRO_Y,ACCEL_R,ACCEL_P,ACCEL_Y,GPS_TIME,GPS_ALTITUDE,"
             "GPS_LATITUDE,GPS_LONGITUDE,GPS_SATS,CMD_ECHO,,ROLL,PITCH,YAW,HEADING_ERROR,PG_STATE,"
             "DISTANCE_TO_TARGET,GROUND_DETECTION_ALTITUDE"
         )
@@ -203,9 +203,6 @@ class CanSatSimulator:
             accel_r = round(random.uniform(-10.0, 10.0), 1)
             accel_p = round(random.uniform(-10.0, 10.0), 1)
             accel_y = round(random.uniform(-10.0, 10.0), 1)
-            mag_r = round(random.uniform(-100.0, 100.0), 1)
-            mag_p = round(random.uniform(-100.0, 100.0), 1)
-            mag_y = round(random.uniform(-100.0, 100.0), 1)
         else:
             gyro_r = round(random.uniform(-2.0, 2.0), 1)
             gyro_p = round(random.uniform(-2.0, 2.0), 1)
@@ -213,9 +210,6 @@ class CanSatSimulator:
             accel_r = round(random.uniform(-0.5, 0.5), 1)
             accel_p = round(random.uniform(-0.5, 0.5), 1)
             accel_y = round(random.uniform(9.5, 10.5), 1)
-            mag_r = round(random.uniform(-50.0, 50.0), 1)
-            mag_p = round(random.uniform(-50.0, 50.0), 1)
-            mag_y = round(random.uniform(-50.0, 50.0), 1)
         
         # GPS data
         gps_time = mission_time
@@ -250,9 +244,6 @@ class CanSatSimulator:
             f"{accel_r},"                 # ACCEL_R
             f"{accel_p},"                 # ACCEL_P
             f"{accel_y},"                 # ACCEL_Y
-            f"{mag_r},"                   # MAG_R
-            f"{mag_p},"                   # MAG_P
-            f"{mag_y},"                   # MAG_Y
             f"{gps_time},"                # GPS_TIME
             f"{gps_altitude},"            # GPS_ALTITUDE
             f"{gps_lat},"                 # GPS_LATITUDE
