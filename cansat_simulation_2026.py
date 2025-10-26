@@ -40,7 +40,7 @@ class CanSatSimulator:
         print(f"✅ Connected to {port} at {baudrate} baud")
         
         # Flight parameters
-        self.team_id = "1000"
+        self.team_id = "1064"
         self.packet_count = 0
         self.flight_mode = False
         self.telemetry_enabled = False

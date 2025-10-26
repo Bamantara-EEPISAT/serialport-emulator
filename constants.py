@@ -30,7 +30,7 @@ def load_constants(year):
         },
 
         2026: {
-            "TEAM_ID": "3121",
+            "TEAM_ID": "1064",
             "PACKET_COUNT_START": 0,
             "START_TIME": datetime(2026, 11, 14, 13, 0, 0),
             "STATES": ["LAUNCH_PAD", "ASCENT", "APOGEE", "DESCENT", "PROBE_RELEASE", "PAYLOAD_RELEASE", "LANDED"],
