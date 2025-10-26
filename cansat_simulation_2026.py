@@ -42,7 +42,7 @@ class CanSatSimulator:
         # Flight parameters
         self.team_id = "1064"
         self.packet_count = 0
-        self.flight_mode = False
+        self.flight_mode = True
         self.telemetry_enabled = False
         self.simulation_enabled = False
         
